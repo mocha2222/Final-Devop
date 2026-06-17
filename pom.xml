@@ -6,7 +6,6 @@
 	http://maven.apache.org/POM/4.0.0
 	https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-
 	<modelVersion>4.0.0</modelVersion>
 
 
@@ -27,7 +26,7 @@
 
 	<properties>
 
-		<java.version>25</java.version>
+		<java.version>21</java.version>
 
 	</properties>
 
@@ -36,36 +35,30 @@
 	<dependencies>
 
 
-		<!-- WEB -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
 
-		<!-- JPA -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
 
-		<!-- THYMELEAF -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 
 
-		<!-- VALIDATION -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
 
-
-		<!-- MYSQL -->
 
 		<dependency>
 			<groupId>com.mysql</groupId>
@@ -74,9 +67,6 @@
 		</dependency>
 
 
-
-
-		<!-- LOMBOK FOR JAVA 25 -->
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -88,8 +78,6 @@
 
 
 
-		<!-- TEST -->
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -97,8 +85,6 @@
 		</dependency>
 
 
-
-		<!-- SQLITE TEST -->
 
 		<dependency>
 			<groupId>org.xerial</groupId>
@@ -117,9 +103,6 @@
 
 
 
-
-		<!-- QR CODE -->
-
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>core</artifactId>
@@ -135,17 +118,12 @@
 
 
 
-
-
-		<!-- ITEXT PDF -->
-
 		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>itext7-core</artifactId>
 			<version>8.0.5</version>
 			<type>pom</type>
 		</dependency>
-
 
 
 		<dependency>
@@ -155,9 +133,6 @@
 		</dependency>
 
 
-
-
-		<!-- COMMON IO -->
 
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -171,15 +146,10 @@
 
 
 
-
 	<build>
-
 
 		<plugins>
 
-
-
-			<!-- JAVA 25 COMPILER -->
 
 			<plugin>
 
@@ -190,11 +160,10 @@
 
 				<configuration>
 
-					<release>25</release>
+					<release>21</release>
 
 
 					<annotationProcessorPaths>
-
 
 						<path>
 
@@ -216,24 +185,18 @@
 
 
 
-
-			<!-- SPRING BOOT -->
-
 			<plugin>
 
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 
-
 			</plugin>
-
 
 
 		</plugins>
 
 
 	</build>
-
 
 
 </project>

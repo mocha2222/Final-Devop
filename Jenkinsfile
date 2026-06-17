@@ -5,7 +5,7 @@ pipeline {
 
     tools {
 
-        jdk 'JDK25'
+        jdk 'JDK21'
 
         maven 'Maven'
 
@@ -26,6 +26,7 @@ pipeline {
         }
 
 
+
         stage('Test') {
 
             steps {
@@ -37,6 +38,7 @@ pipeline {
         }
 
 
+
         stage('Deploy') {
 
             steps {
@@ -46,6 +48,7 @@ pipeline {
             }
 
         }
+
 
     }
 
