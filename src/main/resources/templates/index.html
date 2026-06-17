@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(content=~{::div.content}, styles=~{})}">
+<body>
+    <div class="content">
+        <h1 style="margin-bottom: 2rem;">Manage Profiles</h1>
+        
+        <div style="background: white; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead style="background-color: #f9fafb; border-bottom: 1px solid #e5e7eb;">
+                    <tr>
+                        <th style="padding: 1rem;">ID</th>
+                        <th style="padding: 1rem;">Photo</th>
+                        <th style="padding: 1rem;">Registration No</th>
+                        <th style="padding: 1rem;">Name</th>
+                        <th style="padding: 1rem;">Type</th>
+                        <th style="padding: 1rem;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="profile : ${profiles}" style="border-bottom: 1px solid #e5e7eb;">
+                        <td style="padding: 1rem;" th:text="${profile.id}">1</td>
+                        <td style="padding: 1rem;">
+                            <img th:if="${profile.photoPath != null}" th:src="${profile.photoPath}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                            <div th:unless="${profile.photoPath != null}" style="width: 40px; height: 40px; border-radius: 50%; background: #e5e7eb; display:flex; align-items:center; justify-content:center; color:#9ca3af;">N/A</div>
+                        </td>
+                        <td style="padding: 1rem;" th:text="${profile.registrationNumber}">2026-IT-123456</td>
+                        <td style="padding: 1rem;" th:text="${profile.firstName + ' ' + profile.lastName}">John Doe</td>
+                        <td style="padding: 1rem;">
+                            <span style="background: #dbeafe; color: #1e40af; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;" 
+                                  th:text="${profile.profileType}">STUDENT</span>
+                        </td>
+                        <td style="padding: 1rem;">
+                            <a th:href="@{/preview/{id}(id=${profile.id})}" class="btn" style="background-color: #10b981; margin-right: 0.5rem;">View Card</a>
+                            <a th:href="@{/export/pdf/{id}(id=${profile.id})}" class="btn" style="background-color: #f59e0b;">Export PDF</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(profiles)}">
+                        <td colspan="6" style="padding: 2rem; text-align: center; color: #6b7280;">No profiles found. Create one to get started!</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

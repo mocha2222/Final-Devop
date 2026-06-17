@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .id-card-wrapper {
+            background: white;
+            width: 320px;
+            height: 500px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            color: #1f2937;
+            margin: 0 auto;
+        }
+        .header-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #312e81 100%);
+            height: 120px;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        .card-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+        }
+        .photo-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: white;
+            padding: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .user-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+        .user-role {
+            font-size: 0.875rem;
+            color: #4f46e5;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+        .info-grid {
+            width: 80%;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            border-bottom: 1px solid #f3f4f6;
+            padding-bottom: 5px;
+        }
+        .info-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+        .code-container {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+        }
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body style="background: transparent;">
+    <div class="id-card-wrapper" id="idCard">
+        <div class="header-bg"></div>
+        <div class="card-content">
+            <div class="photo-container">
+                <img id="previewPhoto" th:src="${profile.photoPath != null ? profile.photoPath : 'https://ui-avatars.com/api/?name=User&background=random'}" alt="Profile">
+            </div>
+            <h2 class="user-name" id="previewName" th:text="${profile.firstName != null ? profile.firstName + ' ' + (profile.lastName ?: '') : 'Name Surname'}">Name Surname</h2>
+            <div class="user-role" id="previewRole" th:text="${profile.profileType != null ? profile.profileType : 'ROLE'}">ROLE</div>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">ID No</span>
+                    <strong id="previewRegNo" th:text="${profile.registrationNumber != null ? profile.registrationNumber : 'TBD'}">TBD</strong>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Dept</span>
+                    <strong id="previewDept" th:text="${profile.department != null ? profile.department : 'Dept'}">Dept</strong>
+                </div>
+            </div>
+            
+            <div class="code-container" th:if="${profile.qrCodePath != null}">
+                <img class="qr-code" th:src="${profile.qrCodePath}" alt="QR">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
