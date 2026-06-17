@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  web-server:
+    build: .
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+      - "2222:2222"
+
+  mysql-database:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: Hello@123
+      MYSQL_DATABASE: A-Soeng_Prakbormey-db
+    ports:
+      - "3306:3306"

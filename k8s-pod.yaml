@@ -7,15 +7,9 @@ metadata:
 spec:
   containers:
     - name: web-server
-      image: ubuntu:22.04
-      command: ["/bin/sh", "-c"]
-      args:
-        - apt-get update && apt-get install -y openjdk-21-jdk nginx openssh-server php-cli git;
-          mkdir -p /run/sshd;
-          echo "server { listen 8080 default_server; location / { proxy_pass http://127.0.0.1:8081; } }" > /etc/nginx/sites-available/default;
-          service nginx start;
-          /usr/sbin/sshd;
-          sleep infinity;
+      # This tells Kubernetes to use the Dockerfile image we build
+      image: custom-web-server-image:latest
+      imagePullPolicy: Never
       ports:
         - containerPort: 8443
         - containerPort: 2222
