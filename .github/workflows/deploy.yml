@@ -1,0 +1,80 @@
+name: Build-Test-Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  build-test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+
+      - name: Build
+        run: mvn clean package
+
+
+      - name: Test
+        run: mvn test
+
+
+  deploy:
+
+    needs: build-test
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install ansible -y
+
+
+      - name: Deploy
+        run: |
+          ansible-playbook -i inventory deploy.yml
+
+
+  email:
+
+    needs: build-test
+
+    if: failure()
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Send email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: Build Failed
+          to: srengty@gmail.com
+          from: ${{ secrets.EMAIL_USERNAME }}
+          body: |
+            Build failed.
+            Developer: ${{ github.actor }}
