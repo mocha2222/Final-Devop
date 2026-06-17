@@ -1,0 +1,10 @@
+---
+- hosts: webserver
+
+  tasks:
+
+    - name: Deploy Jar
+
+      copy:
+        src: target/
+        dest: /opt/app
