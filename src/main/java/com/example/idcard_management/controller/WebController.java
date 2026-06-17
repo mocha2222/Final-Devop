@@ -34,7 +34,7 @@ public class WebController {
         return "index";
     }
 
-    @GetMapping("/create")
+    @GetMappin"/create")
     public String createCardForm(Model model) {
         model.addAttribute("profile", new Profile());
         return "create_card";
