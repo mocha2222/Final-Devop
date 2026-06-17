@@ -18,6 +18,13 @@
     # ==========================================
     # STEP 1: Git Pull
     # ==========================================
+    - name: Reset local changes in app directory
+      shell: |
+        if [ -d "{{ app_dir }}/.git" ]; then
+          cd {{ app_dir }} && git reset --hard HEAD
+        fi
+      tags: git
+
     - name: Clean app directory if it exists but is not a git repo
       shell: |
         if [ -d "{{ app_dir }}" ] && [ ! -d "{{ app_dir }}/.git" ]; then
@@ -117,5 +124,13 @@
     - name: Display backup result
       debug:
         msg: "Backup completed successfully: {{ backup_file }} ({{ backup_stat.stat.size }} bytes)"
+      when: backup_stat.stat.exists
+      tags: backup
+
+    - name: Fetch backup file to local machine
+      fetch:
+        src: "{{ backup_file }}"
+        dest: "./backups/"
+        flat: yes
       when: backup_stat.stat.exists
       tags: backup
