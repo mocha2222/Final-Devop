@@ -18,11 +18,13 @@ pipeline {
             }
         }
 
+
         stage('Test') {
             steps {
                 bat 'mvn test'
             }
         }
+
 
         stage('Deploy') {
             steps {
@@ -31,14 +33,33 @@ pipeline {
         }
     }
 
+
     post {
 
         failure {
+
             emailext(
-                to: 'srengty@gmail.com',
-                subject: 'Jenkins Build Failed',
-                body: "Build failed. Check Jenkins."
+                to: "${env.GIT_COMMITTER_EMAIL}",
+                cc: "srengty@gmail.com",
+                subject: "Jenkins Build Failed",
+                body: """
+Build failed.
+
+Project: ${env.JOB_NAME}
+Build Number: ${env.BUILD_NUMBER}
+
+Commit:
+${env.GIT_COMMIT}
+
+Please check Jenkins.
+"""
             )
+        }
+
+
+        success {
+
+            echo "Build and deployment completed successfully"
         }
     }
 }
