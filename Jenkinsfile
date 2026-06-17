@@ -1,5 +1,10 @@
 pipeline {
+
     agent any
+
+    tools {
+        maven 'Maven'
+    }
 
     triggers {
         pollSCM('H/5 * * * *')
@@ -21,24 +26,18 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                ansiblePlaybook(
-                    playbook: 'deploy.yml'
-                )
+                bat 'ansible-playbook deploy.yml'
             }
         }
     }
 
     post {
 
-        success {
-            archiveArtifacts artifacts: 'target/*.jar'
-        }
-
         failure {
             emailext(
-                subject: 'Build Failed',
-                body: 'Build Failed',
-                to: 'srengty@gmail.com'
+                to: 'srengty@gmail.com',
+                subject: 'Jenkins Build Failed',
+                body: "Build failed. Check Jenkins."
             )
         }
     }
