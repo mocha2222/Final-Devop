@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: idcard-app-pod
+  labels:
+    app: spring-web
+spec:
+  containers:
+    - name: web-server
+      image: ubuntu:22.04
+      command: ["/bin/sh", "-c"]
+      args:
+        - apt-get update && apt-get install -y openjdk-21-jdk nginx openssh-server php-cli git;
+          mkdir -p /run/sshd;
+          echo "server { listen 8080 default_server; location / { proxy_pass http://127.0.0.1:8081; } }" > /etc/nginx/sites-available/default;
+          service nginx start;
+          /usr/sbin/sshd;
+          sleep infinity;
+      ports:
+        - containerPort: 8443
+        - containerPort: 2222
+        - containerPort: 8080
+    - name: mysql-database
+      image: mysql:8.0
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "Hello@123"
+        - name: MYSQL_DATABASE
+          value: "A-Soeng_Prakbormey-db"
+      ports:
+        - containerPort: 3306

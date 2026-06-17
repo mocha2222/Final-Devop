@@ -32,10 +32,13 @@ public class Profile {
 
     private String department;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String photoPath;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String qrCodePath;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String barcodePath;
 
     @Enumerated(EnumType.STRING)
