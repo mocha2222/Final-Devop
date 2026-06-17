@@ -43,7 +43,7 @@ pipeline {
 
             steps {
 
-                bat 'ansible-playbook deploy.yml'
+                bat 'wsl ansible-playbook -i inventory deploy.yml'
 
             }
 
