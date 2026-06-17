@@ -16,18 +16,14 @@
 
   tasks:
     # ==========================================
-    # STEP 1: Git Pull (Clone if missing)
+    # STEP 1: Git Pull
     # ==========================================
-    - name: Check if .git exists
-      stat:
-        path: "{{ app_dir }}/.git"
-      register: git_status
-
-    - name: Clear app directory if not a git repo
-      file:
-        path: "{{ app_dir }}"
-        state: absent
-      when: not git_status.stat.exists
+    - name: Clean app directory if it exists but is not a git repo
+      shell: |
+        if [ -d "{{ app_dir }}" ] && [ ! -d "{{ app_dir }}/.git" ]; then
+          rm -rf {{ app_dir }}/*
+        fi
+      tags: git
 
     - name: Ensure the repository is cloned and up to date
       ansible.builtin.git:
