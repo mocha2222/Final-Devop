@@ -26,7 +26,7 @@ public class ProfileController {
         return profileService.getById(id);
     }
 
-    @GetMapping("/registration/{registrationNumber}")
+    @GetMap("/registration/{registrationNumber}")
     public Profile getByRegistrationNumber(
             @PathVariable String registrationNumber) {
 
