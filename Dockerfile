@@ -1,22 +1,43 @@
-FROM ubuntu:22.04
+FROM eclipse-temurin:25-jdk
 
-# Update and install required packages
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    openjdk-21-jdk \
-    nginx \
-    openssh-server \
-    php-cli \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+# Install NGINX and OpenSSH server
+RUN apt-get update && \
+    apt-get install -y nginx openssh-server git default-mysql-client && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Configure SSH
-RUN mkdir -p /run/sshd
+RUN mkdir -p /var/run/sshd && \
+    echo 'root:root' | chpasswd && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
-# Configure NGINX reverse proxy for Spring Boot
-RUN echo "server { listen 8080 default_server; location / { proxy_pass http://127.0.0.1:8081; } }" > /etc/nginx/sites-available/default
+# Set working directory
+WORKDIR /app
 
-# Expose required ports
-EXPOSE 8080 8443 2222
+# Copy Maven wrapper and build files first (for caching)
+COPY mvnw ./
+COPY .mvn/ .mvn/
+COPY pom.xml ./
 
-# Start NGINX and SSH silently
-CMD service nginx start && /usr/sbin/sshd -D
+# Copy source code
+COPY src/ src/
+
+# Build the application
+RUN chmod +x mvnw && ./mvnw package -DskipTests -B
+
+# Copy NGINX config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Create uploads directory
+RUN mkdir -p /app/uploads/photos
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+service ssh start\n\
+nginx -g "daemon off;" &\n\
+java -jar /app/target/*.jar --server.port=8081\n'\
+> /start.sh && chmod +x /start.sh
+
+EXPOSE 8081 22
+
+CMD ["/start.sh"]

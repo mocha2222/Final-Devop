@@ -1,17 +1,31 @@
-version: '3.8'
-
 services:
   web-server:
     build: .
+    container_name: idcard-web-server
     ports:
-      - "8080:8080"
-      - "8443:8443"
-      - "2222:2222"
+      - "8443:8081"
+      - "2222:22"
+    depends_on:
+      mysql-database:
+        condition: service_healthy
+    restart: unless-stopped
 
   mysql-database:
     image: mysql:8.0
+    container_name: idcard-mysql-database
     environment:
       MYSQL_ROOT_PASSWORD: Hello@123
       MYSQL_DATABASE: A-Soeng_Prakbormey-db
     ports:
-      - "3306:3306"
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pHello@123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  mysql-data:

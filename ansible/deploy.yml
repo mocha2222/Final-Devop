@@ -1,0 +1,125 @@
+---
+- name: Deploy ID Card Management Application
+  hosts: CHOICE_A
+  vars:
+    app_dir: /app
+    repo_url: https://github.com/mocha2222/Final-Devop.git
+    db_name: "A-Soeng_Prakbormey-db"
+    db_user: root
+    db_password: "Hello@123"
+    backup_dir: /app/backups
+    java_home: /opt/java/openjdk
+
+  environment:
+    JAVA_HOME: "{{ java_home }}"
+    PATH: "{{ java_home }}/bin:{{ ansible_env.PATH }}"
+
+  tasks:
+    # ==========================================
+    # STEP 1: Git Pull (Clone if missing)
+    # ==========================================
+    - name: Check if .git exists
+      stat:
+        path: "{{ app_dir }}/.git"
+      register: git_status
+
+    - name: Clear app directory if not a git repo
+      file:
+        path: "{{ app_dir }}"
+        state: absent
+      when: not git_status.stat.exists
+
+    - name: Ensure the repository is cloned and up to date
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ app_dir }}"
+        version: main
+        force: yes
+      tags: git
+
+    # ==========================================
+    # STEP 2: Build using Maven
+    # ==========================================
+    - name: Make Maven wrapper executable
+      file:
+        path: "{{ app_dir }}/mvnw"
+        mode: '0755'
+      tags: build
+
+    - name: Build application with Maven (skip tests for build)
+      command: ./mvnw clean package -DskipTests -B
+      args:
+        chdir: "{{ app_dir }}"
+      tags: build
+
+    # ==========================================
+    # STEP 3: Run tests against SQLite database
+    # ==========================================
+    - name: Create test resources directory
+      file:
+        path: "{{ app_dir }}/src/test/resources"
+        state: directory
+      tags: test
+
+    - name: Create application-test.properties for SQLite
+      copy:
+        dest: "{{ app_dir }}/src/test/resources/application-test.properties"
+        content: |
+          spring.datasource.url=jdbc:sqlite:test-idcard.db
+          spring.datasource.driver-class-name=org.sqlite.JDBC
+          spring.datasource.username=
+          spring.datasource.password=
+          spring.jpa.database-platform=org.hibernate.community.dialect.SQLiteDialect
+          spring.jpa.hibernate.ddl-auto=create-drop
+          spring.jpa.show-sql=true
+      tags: test
+
+    - name: Run tests with SQLite (test profile)
+      command: ./mvnw test -Dspring.profiles.active=test -B
+      args:
+        chdir: "{{ app_dir }}"
+      register: test_result
+      ignore_errors: yes
+      tags: test
+
+    - name: Display test results
+      debug:
+        var: test_result.stdout_lines
+      tags: test
+
+    # ==========================================
+    # STEP 4: Backup MySQL Database
+    # ==========================================
+    - name: Create backup directory
+      file:
+        path: "{{ backup_dir }}"
+        state: directory
+        mode: '0755'
+      tags: backup
+
+    - name: Generate backup filename with timestamp
+      set_fact:
+        backup_file: "{{ backup_dir }}/{{ db_name }}_{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}{{ ansible_date_time.second }}.sql"
+      tags: backup
+
+    - name: Backup MySQL database using mysqldump
+      command: >
+        mysqldump
+        -h mysql-database
+        -u {{ db_user }}
+        -p{{ db_password }}
+        {{ db_name }}
+        --result-file={{ backup_file }}
+      tags: backup
+
+    - name: Verify backup file exists
+      stat:
+        path: "{{ backup_file }}"
+      register: backup_stat
+      tags: backup
+
+    - name: Display backup result
+      debug:
+        msg: "Backup completed successfully: {{ backup_file }} ({{ backup_stat.stat.size }} bytes)"
+      when: backup_stat.stat.exists
+      tags: backup
